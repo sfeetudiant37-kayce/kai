@@ -1,0 +1,57 @@
+/* ============ KAI — Design tokens (source de vérité) ============ */
+:root {
+  /* couleurs sémantiques */
+  --accent: #6D5AE6;
+  --accent-soft: #EEEBFF;
+  --accent-ink: #4B3BC4;
+
+  --domain-foi: #8B5CF6;
+  --domain-corps: #14B8A6;
+  --domain-ecriture: #3B82F6;
+  --domain-apprentissage: #F59E0B;
+  --domain-kaydigi: #EC4899;
+  --domain-lecture: #22C55E;
+  --domain-amis: #F97316;
+  --domain-fixed: #94A3B8;
+
+  --n1: #1F2937;
+  --n2: #F59E0B;
+  --n3: #94A3B8;
+
+  --bg: #F7F7FB;
+  --surface: #FFFFFF;
+  --surface-2: #F1F1F8;
+  --border: #E4E4F0;
+  --text: #17172A;
+  --text-2: #5B5B72;
+  --text-3: #8E8EA6;
+  --success: #16A34A;
+  --warning: #D97706;
+  --danger: #DC2626;
+  --info: #2563EB;
+
+  /* typographie */
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --fs-11: 11px; --fs-12: 12px; --fs-14: 14px; --fs-16: 16px;
+  --fs-20: 20px; --fs-24: 24px; --fs-30: 30px;
+
+  /* espacement (grille 4pt) */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px;
+
+  /* rayons & élévation */
+  --r-chip: 10px; --r-card: 16px; --r-sheet: 24px;
+  --sh-1: 0 1px 2px rgba(23,23,42,.06), 0 1px 3px rgba(23,23,42,.04);
+  --sh-2: 0 4px 12px rgba(23,23,42,.08);
+  --sh-3: 0 12px 32px rgba(23,23,42,.16);
+
+  /* mouvement */
+  --t-fast: 150ms; --t-med: 250ms; --t-slow: 400ms;
+  --ease: cubic-bezier(.2,.8,.2,1);
+
+  --nav-h: 64px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --t-fast: 1ms; --t-med: 1ms; --t-slow: 1ms; }
+}

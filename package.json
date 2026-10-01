@@ -1,0 +1,11 @@
+{
+  "name": "kai",
+  "version": "1.0.0",
+  "description": "Kai — le chauffeur personnel de Kayliah : système de consistency offline-first (vanilla JS).",
+  "type": "module",
+  "scripts": {
+    "start": "python3 -m http.server 8080",
+    "test": "node test/engine.test.mjs"
+  },
+  "license": "MIT"
+}
