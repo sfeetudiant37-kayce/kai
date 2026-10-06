@@ -1,4 +1,4 @@
-/* scripts/build.mjs — copie l'app statique dans www/ (pour Capacitor / déploiement) */
+/* scripts/build.mjs — copie l'app statique dans www/ (Capacitor, déploiement) */
 import { mkdirSync, copyFileSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -13,13 +13,18 @@ const files = [
   'sw.js',
   'css/tokens.css',
   'css/app.css',
-  'js/main.js',
-  'js/store.js',
-  'js/db.js',
-  'js/engine.js',
-  'js/alarms.js',
-  'js/ui.js',
-  'js/views.js',
+  'src/kernel.js',
+  'src/model.js',
+  'src/store.js',
+  'src/db.js',
+  'src/engine.js',
+  'src/insights.js',
+  'src/alarms.js',
+  'src/icons.js',
+  'src/charts.js',
+  'src/ui.js',
+  'src/views.js',
+  'src/main.js',
 ];
 
 rmSync(out, { recursive: true, force: true });

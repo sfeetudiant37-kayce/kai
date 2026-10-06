@@ -1,14 +1,14 @@
 /* ============================================================
-   alarms.js — sonneries & notifications
-   Le système qui « sonne à chaque fois que j'ai un truc à faire ».
-   Web Audio (aucun fichier son) + Notification API + vibration.
+   alarms.js — notifications & carillon
+   Web Audio (synthèse, zéro asset) + Notification API + vibration.
    ============================================================ */
+
+import { log, bus } from './kernel.js';
 
 let ctx = null;
 let ringing = false;
 let ringTimer = null;
 
-/** À appeler après un geste utilisateur (exigence des navigateurs). */
 export function ensureAudio() {
   try {
     ctx = ctx || new (globalThis.AudioContext || globalThis.webkitAudioContext)();
@@ -17,7 +17,6 @@ export function ensureAudio() {
   } catch { return false; }
 }
 
-/** Carillon : deux notes douces, répétées 3 fois (portable-friendly). */
 export function playRing() {
   if (!ensureAudio()) return;
   stopRing();
@@ -31,7 +30,7 @@ export function playRing() {
   };
   seq();
   ringTimer = setInterval(seq, 3200);
-  try { navigator.vibrate?.([300, 150, 300, 150, 500]); } catch { /* pas de vibration sur desktop */ }
+  try { navigator.vibrate?.([300, 150, 300, 150, 500]); } catch { }
 }
 
 function chime(freq, delay, dur) {
@@ -54,9 +53,6 @@ export function stopRing() {
   try { navigator.vibrate?.(0); } catch { }
 }
 
-export function isRinging() { return ringing; }
-
-/* ---------- Notifications système ---------- */
 export function notificationsSupported() { return 'Notification' in globalThis; }
 export function notificationsPermission() { return notificationsSupported() ? Notification.permission : 'unsupported'; }
 
@@ -67,21 +63,16 @@ export async function requestNotifications() {
 
 export function notify(title, body) {
   if (notificationsSupported() && Notification.permission === 'granted') {
-    try { new Notification(title, { body, icon: 'icon.svg', silent: false }); } catch { }
+    try { new Notification(title, { body, icon: 'icon.svg' }); } catch (e) { log.debug('notify', e); }
   }
 }
 
-/* ---------- Ordonnancement : on surveille l'horloge toutes les 30 s ---------- */
+/* ---------- horloge de sonnerie : vérification toutes les 30 s ---------- */
 const rungIds = new Set();
 let tickHandle = null;
 let onRingCb = null;
 
-/**
- * Démarre la surveillance des occurrences d'aujourd'hui.
- * @param getOccurrences () => [{id, taskId, title, date, start, end, state}]
- * @param onRing (occ) => void  (affiche la bannière)
- */
-export function startAlarmClock(getOccurrences, onRing) {
+export function startAlarmClock(getOccurrences, onRing, isRingEnabled = () => true) {
   onRingCb = onRing;
   if (tickHandle) clearInterval(tickHandle);
   const tick = () => {
@@ -93,20 +84,20 @@ export function startAlarmClock(getOccurrences, onRing) {
       if (occ.state === 'done' || occ.state === 'skipped' || occ.state === 'moved') continue;
       const [h, m] = occ.start.split(':').map(Number);
       const startMin = h * 60 + m;
-      // on sonne dans la minute qui suit le début du créneau
       if (nowMin >= startMin && nowMin < startMin + 1 && !rungIds.has(occ.id)) {
-        ringFor(occ);
+        ringFor(occ, isRingEnabled);
       }
     }
   };
   tickHandle = setInterval(tick, 30000);
-  tick(); // tout de suite au cas où
+  tick();
 }
 
-function ringFor(occ) {
+function ringFor(occ, isRingEnabled) {
   rungIds.add(occ.id);
-  if (globalThis.__kaiSettings?.ringtone !== false) playRing();
-  notify("C'est l'heure — " + (occ.title || 'tâche'), `${occ.start} → ${occ.end} — Je commence ou je décale ?`);
+  if (isRingEnabled()) playRing();
+  notify('Kai — ' + (occ.title || 'tâche'), `${occ.start} → ${occ.end} · Je commence ou je décale ?`);
+  bus.emit('ring', occ);
   onRingCb?.(occ);
 }
 

@@ -1,11 +1,15 @@
 {
   "name": "kai",
-  "version": "1.0.0",
-  "description": "Kai — le chauffeur personnel de Kayliah : système de consistency offline-first (vanilla JS).",
+  "version": "2.0.0",
+  "description": "Kai — programme, progression, revenus : le système de consistency offline-first de Kayliah (vanilla JS, zéro dépendance).",
   "type": "module",
   "scripts": {
     "start": "python3 -m http.server 8080",
-    "test": "node test/engine.test.mjs"
+    "test": "node test/engine.test.mjs && node test/insights.test.mjs",
+    "test:engine": "node test/engine.test.mjs",
+    "test:insights": "node test/insights.test.mjs",
+    "build": "node scripts/build.mjs",
+    "cap:sync": "node scripts/build.mjs && npx cap sync"
   },
   "license": "MIT"
 }

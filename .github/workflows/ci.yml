@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Tests moteur (planificateur + chauffeur)
+        run: node test/engine.test.mjs
+      - name: Tests analytics (finances + statistiques)
+        run: node test/insights.test.mjs
+      - name: Build artefact statique (www/)
+        run: node scripts/build.mjs
+      - name: Vérification des modules
+        run: node -e "Promise.all(['./src/kernel.js','./src/model.js','./src/store.js','./src/db.js','./src/engine.js','./src/insights.js','./src/charts.js','./src/icons.js','./src/ui.js','./src/alarms.js'].map(p=>import(p))).then(()=>console.log('modules ok')).catch(e=>{console.error(e);process.exit(1)})"

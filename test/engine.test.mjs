@@ -6,8 +6,8 @@ import assert from 'node:assert/strict';
 import {
   zonesForDate, fixedBlocksForDate, capacityMinutes, requestedMinutes,
   placeWeek, findAlternatives, reroute, sleepDebt,
-} from '../js/engine.js';
-import { defaultState, seedTasks, weekDates, todayISO, toMin, addDays, weekKey } from '../js/store.js';
+} from '../src/engine.js';
+import { defaultState, seedTasks, weekDates, todayISO, toMin, addDays, weekKey } from '../src/model.js';
 
 const st = defaultState();
 const LUNDI = '2026-09-28';   // lundi

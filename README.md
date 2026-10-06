@@ -1,122 +1,59 @@
-# Kai — le chauffeur personnel de Kayliah 🚗💨
+# Kai — programme · progression · revenus
 
-> **Le système de consistency** — il organise ta semaine à partir de tes *weekly achievements*, **sonne** quand c'est l'heure, **gère les collisions** comme une voiture intelligente qui re-route dans l'embouteillage, et **te demande des comptes** comme une personne.
-> 100% **hors-ligne**, JavaScript pur (zéro framework, zéro dépendance), installable sur téléphone et laptop.
+> **Le système de consistency de Kayliah** : un calendrier intelligent qui place tes *weekly achievements*, sonne quand c'est l'heure, gère les collisions comme un chauffeur qui re-route dans l'embouteillage, te demande des comptes, et suit **rigoureusement** tes progrès et tes revenus (kaydigi) sur des semaines, des mois, des années.
+> **100% hors-ligne · aucun compte requis · JavaScript pur, zéro dépendance.**
 
 ---
 
-## Le contrat (le cœur du produit)
+## Ce que fait le système
 
-| Elle (le boss) | Kai (le chauffeur) |
+| Écran | Ce qu'il montre |
 |---|---|
-| Donne ses weekly achievements chaque semaine (dimanche 15h-16h) | **Place tout** dans la semaine — chaque domaine a sa place |
-| Répond aux comptes rendus | **Ne rien oublier** — ce qui traîne revient dans la file |
-| N'ignore pas les sonneries | **Sonner** à chaque créneau |
-| | **Re-route automatiquement** en cas de collision, et notifier chaque changement |
-| | Venir la voir **uniquement en impasse totale** — la dernière décision reste au boss |
-| | Être **human-centric** : jamais de shame, mais aucune complaisance |
+| **Aujourd'hui** | Agenda du jour (timeline), KPIs (tâches, série, charge), point du soir, revue de semaine, journal du chauffeur |
+| **Calendrier** | **Vrai calendrier** : Jour · **Semaine** (grille horaire, blocs proportionnels, ligne « maintenant ») · **Mois** (charges + revenus par jour) · **Année** (réalisation + revenus par mois) |
+| **Finances** | Revenus kaydigi : KPIs (ce mois, encaissé, moyenne, **projection annuelle**), graphique 12 mois, répartition par service (dev web, CM, design, rédaction), objectifs, historique |
+| **Progression** | **Heatmap** de régularité (16 semaines), courbe heures réalisées vs planifiées, heures par domaine, trajectoires longues (kaydigi, foi, design, blog…) |
+| **Réglages** | Vie réelle (travail, église, sommeil, samedi flex), **compte optionnel**, sonneries, thème clair/sombre, données |
 
-## La maison intelligente (codée telle quelle)
+**Le contrat** : tu donnes tes weekly achievements (dimanche 15h-16h), Kai les place, sonne, re-route les collisions (notification : « Collision évitée : … »), et **en impasse seulement** te consulte — la dernière décision reste au boss. Rien ne meurt : les non-faits sont reportés.
 
-- **Travail** : lun-ven 8h30-18h · samedi 9h-14h · rentrée 19h max
-- **Église** : dimanche 8h-13h · **Entrée hebdo + revue** : dimanche 15h-16h
-- **Coucher 22h30** · réveil 4h/5h/6h → le **matin bonus** (0h30-3h30) devient une zone de deep work
-- **Routine du soir (critical times, jamais déplacés)** : repos, manger, distraction, se laver, prière + méditation, compte rendu du soir
-- **Samedi après-midi FLEX** : sortie amies **OU** bloc perso — le chauffeur re-route ce qui devait se faire
-- **Priorités** : **N1** jamais déplacées · **N2** protégées (replanifiées avec notification) · **N3** souples (glissent sans culpabilité)
-- **Règle sommeil** : <6h deux nuits de suite → le chauffeur allège le lendemain
+## Le design (aucun dégradé « IA », de la rigueur)
 
-## Les 6 écrans
+- Calendrier temps-réel type Akiflow/Morgen/Structured : grille horaire, blocs proportionnels, clic pour agir
+- Graphiques SVG dessinés à la main : barres, courbes, donut, heatmap (style Loop/GitHub)
+- Neutres maîtrisés + **un seul accent** (#5E6AD2) · couleur = domaine de vie · chiffres tabulaires
+- Icônes SVG cohérentes (grille 20px, trait 1.8) — **zéro émoji dans l'interface**
+- Mode sombre précis · responsive mobile → desktop · `prefers-reduced-motion` respecté
 
-1. **Aujourd'hui** — anneau de progression, maintenant/ensuite, matin bonus, messages du chauffeur
-2. **Ma semaine** — charge demandée vs capacité, placement automatique, blocs fixes
-3. **Ajouter** — insertion en milieu de semaine + re-route automatique (« Collision évitée : … »)
-4. **Comptes rendus** — questions du système, point du soir (1 min), revue de semaine
-5. **Progression** — trajectoires : kaydigi (logo → identité → offres → clients), foi, design, blog…
-6. **Réglages** — vie réelle, samedi flex, sommeil, sonneries, export/import `.kaibak`
+## L'ingénierie (sous le capot)
 
-## Lancer l'appli
+```
+src/kernel.js   config · logger · bus          src/db.js     IndexedDB + MIGRATIONS
+src/model.js    domaine (pur, testé)           src/store.js  persistance + backup .kaibak
+src/engine.js   le chauffeur (pur, testé)      src/insights.js  finances + stats (pur, testé)
+src/charts.js   graphiques SVG (pur)           src/alarms.js sonneries Web Audio + notifications
+src/views.js    écrans + actions               src/main.js   boot · routeur
+```
+- **21 tests Node** (`npm test`) + **CI GitHub Actions** (tests + build + modules)
+- Base de données **IndexedDB** versionnée (migrations), localStorage en miroir de boot
+- Comme Loop / Pedometer : **pas de compte obligatoire** ; l'option compte (sync cloud) existe dans Réglages
+- PWA offline complet · prêt pour l'APK Capacitor (sonneries appli fermée)
+
+## Lancer
 
 ```bash
-# option 1 : n'importe quel serveur statique
-npm start                # python3 -m http.server 8080
-# puis ouvrir http://localhost:8080
-
-# option 2 : Node pur
-npx serve .
+npm start        # http://localhost:8080
+npm test         # 21 tests
+npm run build    # artefact statique dans www/
 ```
 
-**Sur ton téléphone (PWA)** : ouvrir l'URL → menu du navigateur → *Installer l'application* (ou *Ajouter à l'écran d'accueil*). Ouvre l'appli au moins une fois par jour pour des sonneries fiables (limitation des navigateurs, pas de Kai).
+**Téléphone (PWA)** : ouvrir l'URL → *Installer l'application*. Android : batterie → Kai = « Sans restriction ».
+**APK (sonneries appli fermée)** : `npm run build && npx cap add android && npx cap sync && npx cap open android`.
 
-⚠️ **Android** : paramètres batterie → Kai = *Sans restriction*, et verrouille Kai dans les apps récentes, sinon le système tue les sonneries.
+## Inspirations (recherchées, non copiées)
 
-## Tests
-
-```bash
-npm test    # node test/engine.test.mjs — 13 tests du chauffeur
-```
-
-Couverts : zones de la maison intelligente, aucun double-booking, détection de surcharge, ajout sans collision, re-route (3 options, jours distincts, coût humain), **impasse → décision au boss**, dette de sommeil, rollover (rien ne meurt).
-
-## Architecture (vanilla, offline-first)
-
-```
-index.html            shell + bannière de sonnerie + modales
-css/tokens.css        design system (dégradés, verre dépoli, mode sombre, domaines, N1/N2/N3)
-css/app.css           styles applicatifs (mobile-first, glass & gradient)
-js/store.js           état + profil de vie + backup .kaibak (miroir instantané)
-js/db.js              VRAIE base de données locale : IndexedDB (kv, checkins, log)
-js/engine.js          LE CHAUFFEUR : zones, placement, collisions, re-route
-js/alarms.js          carillon Web Audio + notifications + vibration
-js/views.js           les 6 écrans + actions
-js/main.js            routeur + boot (base → thème → horloge de sonnerie)
-sw.js                 service worker (offline complet)
-capacitor.config.json config pour la vraie APK Android / app iOS
-scripts/build.mjs     copie l'app dans www/ pour le packaging
-```
-
-**Choix techniques assumés** : zéro dépendance (tout fonctionne sans npm install, sans build, sans internet), ES modules, Web Audio (aucun fichier son), **IndexedDB comme vraie base** + localStorage en miroir de démarrage. Le moteur (`engine.js`) est **pur et testé sous Node** — c'est la pièce maîtresse.
-
-## 📱 Installer sur mon téléphone + sonneries MÊME hors-ligne
-
-**Niveau 1 — PWA (5 minutes, déjà prêt) :**
-1. Ouvre l'URL de l'appli dans Chrome (Android) ou Safari (iPhone)
-2. Menu → **Installer l'application** / *Ajouter à l'écran d'accueil*
-3. Ouvre Kai une fois par jour (ou garde-la en tâche de fond)
-4. Android : paramètres batterie → Kai = **Sans restriction** ⚠️
-
-→ Notifications + sonneries **offline** ✔ (Web Audio + Notification API), tant que l'appli tourne en arrière-plan.
-
-**Niveau 2 — Vraie APK (sonneries même appli fermée) — Capacitor :**
-```bash
-npm run build            # copie l'app dans www/
-npm install @capacitor/core @capacitor/cli @capacitor/local-notifications
-npx cap add android      # crée le projet Android
-npx cap sync
-npx cap open android     # ouvre Android Studio → Run ▶
-```
-Les notifications natives sont programmées **à l'avance dans le téléphone** : elles sonnent **appli fermée, sans internet, sans serveur**. Même logique pour iOS (`npx cap add ios`, TestFlight).
-
-## 🎨 Design
-
-- **Glass & gradient** : cartes en verre dépoli, dégradé violet→rose pour l'action, hero coloré
-- **Mode sombre** complet (bouton 🌙 en haut, ou auto selon le téléphone)
-- **Couleurs = sens** : chaque domaine de vie a sa couleur (foi violet, kaydigi rose…), N1/N2/N3 visibles
-- Anneau de progression, nav pilule flottante, micro-animations (respecte `prefers-reduced-motion`)
-
-## Limitations honnêtes
-
-- Les sonneries fiables exigent l'appli ouverte ou installée en PWA (règle des navigateurs). L'app sonne toutes les 30 s dès qu'un créneau commence.
-- iOS limite les notifications quand l'appli est fermée — garde le widget / l'appli épinglée.
-- Les données vivent dans le navigateur de l'appareil : **exporte ta sauvegarde `.kaibak`** régulièrement (Réglages).
-
-## Feuille de route (voir `kai-production-roadmap.md`)
-
-- [x] MVP web : placement, collisions, sonneries, comptes rendus
-- [ ] Sync téléphone ↔ laptop (delta sync LAN/USB)
-- [ ] Version installable desktop (Tauri/Electron)
-- [ ] Multi-utilisateurs (les autres « dans ma situation »)
+Akiflow · Morgen · Structured · Sunsama · Motion/Reclaim (re-route automatique) · Loop Habit Tracker (offline, heatmap, sans compte) · Pedometer de Simple Design (« no sign-in », graphiques mobiles) — avec **les particularités de Kayliah** en plus : la maison intelligente (19h, église 8h-13h, coucher 22h30, réveil 4-6h, samedi flex), le chauffeur/boss, les comptes rendus, kaydigi.
 
 ---
 
-Fait avec 💜 pour Kayliah — *la lumière s'allume quand tu rentres chez toi.*
+Fait avec rigueur pour Kayliah. *La lumière s'allume quand tu rentres chez toi.*

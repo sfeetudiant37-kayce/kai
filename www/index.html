@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Kai — ton chauffeur personnel</title>
-  <meta name="description" content="Kai : le système de consistency de Kayliah — weekly achievements, sonneries, collisions gérées, comptes rendus." />
-  <meta name="theme-color" content="#6D5AE6" />
+  <title>Kai — programme, progression, revenus</title>
+  <meta name="description" content="Kai : le système de consistency de Kayliah — calendrier, weekly achievements, sonneries, collisions gérées, comptes rendus, finances. 100% hors-ligne." />
+  <meta name="theme-color" content="#5E6AD2" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="css/tokens.css" />
@@ -15,54 +15,71 @@
   <div id="shell">
     <header id="topbar">
       <div class="brand">
-        <div class="logo" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M8 6v12M8 12l7-6M8 12l7 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" fill="none"/><circle cx="17" cy="12" r="1.8" fill="#fff"/></svg>
-        </div>
+        <div class="logo">K</div>
         <div>
           <strong>Kai</strong>
-          <span id="driver-status" class="muted">le chauffeur est prêt</span>
+          <span class="muted">le chauffeur est en service</span>
         </div>
       </div>
       <div class="topbar-actions">
-        <button class="icon-btn" id="theme-ico" data-action="theme-toggle" title="Changer de thème" aria-label="Changer de thème">🌙</button>
-        <button class="icon-btn" data-action="ring-enable" title="Activer les sonneries" aria-label="Activer les sonneries">🔔</button>
-        <button class="icon-btn" data-action="go" data-view="settings" title="Réglages" aria-label="Réglages">⚙️</button>
+        <button class="icon-btn" id="theme-ico" data-action="theme-toggle" aria-label="Changer de thème" title="Thème">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10Z"/></svg>
+        </button>
+        <button class="icon-btn" data-action="ring-enable" aria-label="Activer les sonneries" title="Sonneries">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 7H3s3 0 3-7"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+        </button>
       </div>
     </header>
 
-    <main id="app" aria-live="polite"><!-- vue active --></main>
+    <main id="app" aria-live="polite"></main>
 
     <nav id="bottomnav" aria-label="Navigation principale">
-      <button data-action="go" data-view="today"><span class="nav-ico">◉</span><span>Aujourd'hui</span></button>
-      <button data-action="go" data-view="week"><span class="nav-ico">▦</span><span>Semaine</span></button>
-      <button class="fab" data-action="go" data-view="add" aria-label="Ajouter une tâche"><span>+</span></button>
-      <button data-action="go" data-view="checkins"><span class="nav-ico">☑</span><span>Comptes</span></button>
-      <button data-action="go" data-view="progress"><span class="nav-ico">↗</span><span>Progression</span></button>
+      <button class="nav-item" data-action="go" data-view="today">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18"/><circle cx="12" cy="15.5" r="1.6" fill="currentColor" stroke="none"/></svg>
+        <span>Aujourd'hui</span>
+      </button>
+      <button class="nav-item" data-action="go" data-view="calendar">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></svg>
+        <span>Calendrier</span>
+      </button>
+      <button class="fab" data-action="open-add" aria-label="Ajouter une tâche">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+      <button class="nav-item" data-action="go" data-view="finance">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="6" width="20" height="14" rx="3"/><path d="M2 10h20M16 15h3"/></svg>
+        <span>Finances</span>
+      </button>
+      <button class="nav-item" data-action="go" data-view="progress">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+        <span>Progression</span>
+      </button>
+      <button class="nav-item" data-action="go" data-view="settings">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></svg>
+        <span>Réglages</span>
+      </button>
     </nav>
   </div>
 
-  <!-- bannière de sonnerie (le chauffeur) -->
   <div id="ring-banner" class="ring-banner hidden" role="alertdialog" aria-label="Sonnerie de tâche">
     <div class="ring-line">
-      <span class="ring-emoji">⏰</span>
+      <span aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      </span>
       <div>
-        <strong id="ring-title">C'est l'heure !</strong>
+        <strong id="ring-title">C'est l'heure.</strong>
         <div id="ring-sub" class="muted"></div>
       </div>
     </div>
     <div class="ring-actions">
-      <button class="btn primary" data-action="ring-start">Je commence</button>
-      <button class="btn ghost" data-action="ring-defer">Je décale</button>
+      <button class="btn btn-primary" data-action="ring-start">Je commence</button>
+      <button class="btn btn-ghost" data-action="ring-defer">Je décale</button>
     </div>
   </div>
 
-  <!-- toast / message du chauffeur -->
   <div id="toast" class="toast hidden" role="status"></div>
-
-  <!-- feuille modale (bottom sheet) -->
   <div id="sheet-backdrop" class="sheet-backdrop hidden" data-action="sheet-close"></div>
   <div id="sheet" class="sheet hidden" role="dialog" aria-modal="true"></div>
 
-  <script type="module" src="js/main.js"></script>
+  <script type="module" src="src/main.js"></script>
 </body>
 </html>

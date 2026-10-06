@@ -1,5 +1,5 @@
-/* Kai — service worker : mise en cache complète (offline-first) */
-const CACHE = 'kai-v1';
+/* Kai — service worker : cache-first (offline complet) */
+const CACHE = 'kai-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -7,12 +7,18 @@ const ASSETS = [
   './icon.svg',
   './css/tokens.css',
   './css/app.css',
-  './js/main.js',
-  './js/store.js',
-  './js/engine.js',
-  './js/alarms.js',
-  './js/ui.js',
-  './js/views.js',
+  './src/kernel.js',
+  './src/model.js',
+  './src/store.js',
+  './src/db.js',
+  './src/engine.js',
+  './src/insights.js',
+  './src/alarms.js',
+  './src/icons.js',
+  './src/charts.js',
+  './src/ui.js',
+  './src/views.js',
+  './src/main.js',
 ];
 
 self.addEventListener('install', (e) => {
@@ -26,7 +32,6 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// cache-first, avec rafraîchissement en arrière-plan (stale-while-revalidate)
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
   e.respondWith(

@@ -1,23 +1,19 @@
 /* ============================================================
    engine.js — le chauffeur intelligent
-   Moteur de placement + détection de collisions + re-route.
+   Placement · collisions · re-route · capacité
    Pur module : testable sous Node, aucun DOM.
 
-   Rappel des règles (le contrat) :
-   - N1 : jamais déplacées (blocs fixes de la vie réelle)
-   - N2 : protégées — replanifiées uniquement avec notification
-   - N3 : souples — glissent sans culpabilité
-   - Le chauffeur RE-ROUTE d'abord, notifie, et ne vient voir
-     le BOSS qu'en impasse totale.
+   Le contrat :
+   - N1 : jamais déplacées · N2 : protégées (notification) · N3 : souples
+   - Le chauffeur re-route DANS la semaine ; l'impasse → le boss décide.
    ============================================================ */
 
-import { toMin, toHM, dayOfWeek, addDays, weekDates, frDay, frShort, fmtDur } from './store.js';
+import { toMin, toHM, dayOfWeek, addDays, weekDates, frShort, fmtDur } from './model.js';
 
 /* ============================================================
-   1. Zones d'exécution & blocs fixes — MA VIE RÉELLE
+   1. Zones d'exécution & blocs fixes — la vie réelle
    ============================================================ */
 
-/** Blocs fixes affichés (critical times) pour une date ISO. */
 export function fixedBlocksForDate(iso, st) {
   const dow = dayOfWeek(iso);
   const p = st.profile;
@@ -39,14 +35,13 @@ export function fixedBlocksForDate(iso, st) {
   return out;
 }
 
-/** Zones libres où les weekly achievements peuvent atterrir. */
 export function zonesForDate(iso, st, nowMin = null) {
   const dow = dayOfWeek(iso);
   const p = st.profile;
   const zones = [];
   const push = (type, start, end, label) => {
     let s = toMin(start), e = toMin(end);
-    if (nowMin !== null && dayIsToday(iso, nowMin, st)) s = Math.max(s, nowMin);
+    if (nowMin !== null && iso === systemToday()) s = Math.max(s, nowMin);
     if (e - s >= 15) zones.push({ type, start: toHM(s), end: toHM(e), label });
   };
   if (dow >= 1 && dow <= 5) {
@@ -55,18 +50,15 @@ export function zonesForDate(iso, st, nowMin = null) {
   } else if (dow === 6) {
     if (p.saturdayFlex === 'perso') push('deep', '15:30', '21:00', 'Samedi perso');
     else if (p.saturdayFlex === 'mi-temps') push('deep', '15:30', '18:00', 'Samedi perso');
-    // 'sortie' (avec mes amies) → aucune zone, le chauffeur re-route ailleurs
   } else {
     if (!p.sundaySocial) push('deep', '16:00', '19:00', 'Dimanche');
   }
   return zones;
 }
 
-function dayIsToday(iso, nowMin, st) {
-  // "aujourd'hui" = même date que l'horloge système ; nowMin = minutes depuis minuit
+function systemToday() {
   const now = new Date();
-  const today = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
-  return iso === today;
+  return now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
 }
 
 /* ============================================================
@@ -88,12 +80,11 @@ export function requestedMinutes(tasks) {
 }
 
 /* ============================================================
-   3. Placement de la semaine (l'entrée hebdo)
+   3. Placement (l'entrée hebdo)
    ============================================================ */
 
 const overlap = (s1, e1, s2, e2) => s1 < e2 && s2 < e1;
 
-/** Fenêtres réellement libres = zones − (blocs fixes + déjà placé). */
 function freeWindows(iso, st, placed, nowMin) {
   const busy = fixedBlocksForDate(iso, st).map(b => [toMin(b.start), toMin(b.end)]);
   for (const o of placed) {
@@ -103,7 +94,6 @@ function freeWindows(iso, st, placed, nowMin) {
   for (const z of zonesForDate(iso, st, nowMin)) {
     let s = toMin(z.start);
     const e = toMin(z.end);
-    // découpe la zone contre les occupés (tri)
     const blockers = busy.filter(([bs, be]) => overlap(s, e, bs, be)).sort((a, b) => a[0] - b[0]);
     let cursor = s;
     for (const [bs, be] of blockers) {
@@ -115,7 +105,6 @@ function freeWindows(iso, st, placed, nowMin) {
   return out;
 }
 
-/** Choisit le meilleur emplacement pour une tâche. Retourne null si rien. */
 function bestSlot(task, st, dates, placed, domainByDay, nowMin, fromISO) {
   let best = null;
   for (const iso of dates) {
@@ -126,12 +115,9 @@ function bestSlot(task, st, dates, placed, domainByDay, nowMin, fromISO) {
       const end = toMin(w.start) + dur;
       let score = 0;
       if (task.zonePref === 'any') score += 2;
-      else if (task.zonePref === w.type) score += 3; else score += 0;
-      // équilibre des domaines : moins ce domaine a déjà de minutes ce jour-là, mieux c'est
+      else if (task.zonePref === w.type) score += 3;
       score -= ((domainByDay[iso]?.[task.domain]) || 0) / 30;
-      // on préfère les jours proches
       score -= dates.indexOf(iso) * 0.4;
-      // les N2 veulent des zones deep un peu plus tôt dans la semaine
       if (task.criticality === 2 && w.type === 'deep') score += 0.5;
       const cand = { date: iso, start: w.start, end: toHM(end), zone: w.label, score };
       if (!best || cand.score > best.score) best = cand;
@@ -140,10 +126,6 @@ function bestSlot(task, st, dates, placed, domainByDay, nowMin, fromISO) {
   return best;
 }
 
-/**
- * Place les tâches de la semaine. Ne renvoie que les NOUVELLES occurrences.
- * @param warnings: surcharge, tâches non placées (→ escalade au boss)
- */
 export function placeWeek(tasks, st, dates, existing = [], nowMin = null) {
   const placed = [...existing];
   const warnings = [];
@@ -178,18 +160,13 @@ export function placeWeek(tasks, st, dates, existing = [], nowMin = null) {
 }
 
 /* ============================================================
-   4. Le chauffeur — re-route automatique (collisions, décalages)
+   4. Le chauffeur — re-route (collisions, « Je décale »)
    ============================================================ */
 
-/**
- * Trouve des créneaux de repli pour une tâche (semaine courante + suivante).
- * Retourne jusqu'à `max` options avec coût humain en texte.
- */
 export function findAlternatives(task, st, occurrences, fromISO, nowMin = null, max = 3) {
   const thisWeek = weekDates(fromISO);
   const nextWeek = thisWeek.map(d => addDays(d, 7));
   const dates = [...thisWeek, ...nextWeek];
-  // on retire les occurrences de CETTE tâche (elle cherche un nouveau nid)
   const others = occurrences.filter(o => o.taskId !== task.id);
   const candidates = [];
   for (const iso of dates) {
@@ -209,7 +186,6 @@ export function findAlternatives(task, st, occurrences, fromISO, nowMin = null, 
     }
   }
   candidates.sort((a, b) => b.score - a.score);
-  // garder au plus une option par jour (diversité des solutions)
   const seen = new Set();
   const out = [];
   for (const c of candidates) {
@@ -229,11 +205,6 @@ function costText(fromISO, toISO) {
 }
 function parseMs(iso) { const [y, m, d] = iso.split('-').map(Number); return new Date(y, m - 1, d).getTime(); }
 
-/**
- * Re-route : le chauffeur ne décide que dans les limites de LA SEMAINE.
- * S'il ne reste aucun chemin cette semaine → c'est le BOSS qui décide
- * (glisser sur la semaine suivante est un choix du boss, pas du chauffeur).
- */
 export function reroute(task, st, occurrences, fromISO, nowMin = null) {
   const alts = findAlternatives(task, st, occurrences, fromISO, nowMin, 4);
   const weekEnd = weekDates(fromISO)[6];
@@ -245,7 +216,7 @@ export function reroute(task, st, occurrences, fromISO, nowMin = null) {
 }
 
 /* ============================================================
-   5. Règles humaines — dette de sommeil & samedi flex
+   5. Règles humaines
    ============================================================ */
 export function sleepDebt(st) {
   const log = (st.patterns?.sleepLog || []).slice(-2);
