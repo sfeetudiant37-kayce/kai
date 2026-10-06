@@ -62,17 +62,47 @@ Couverts : zones de la maison intelligente, aucun double-booking, détection de 
 
 ```
 index.html            shell + bannière de sonnerie + modales
-css/tokens.css        design system (couleurs domaines, N1/N2/N3, typo…)
-css/app.css           styles applicatifs (mobile-first)
-js/store.js           données (localStorage), profil de vie, backup .kaibak
+css/tokens.css        design system (dégradés, verre dépoli, mode sombre, domaines, N1/N2/N3)
+css/app.css           styles applicatifs (mobile-first, glass & gradient)
+js/store.js           état + profil de vie + backup .kaibak (miroir instantané)
+js/db.js              VRAIE base de données locale : IndexedDB (kv, checkins, log)
 js/engine.js          LE CHAUFFEUR : zones, placement, collisions, re-route
 js/alarms.js          carillon Web Audio + notifications + vibration
 js/views.js           les 6 écrans + actions
-js/main.js            routeur + horloge de sonnerie
+js/main.js            routeur + boot (base → thème → horloge de sonnerie)
 sw.js                 service worker (offline complet)
+capacitor.config.json config pour la vraie APK Android / app iOS
+scripts/build.mjs     copie l'app dans www/ pour le packaging
 ```
 
-**Choix techniques assumés** : zéro dépendance (tout fonctionne sans npm install, sans build, sans internet), ES modules, Web Audio (aucun fichier son), localStorage + export chiffrable plus tard. Le moteur (`engine.js`) est **pur et testé sous Node** — c'est la pièce maîtresse.
+**Choix techniques assumés** : zéro dépendance (tout fonctionne sans npm install, sans build, sans internet), ES modules, Web Audio (aucun fichier son), **IndexedDB comme vraie base** + localStorage en miroir de démarrage. Le moteur (`engine.js`) est **pur et testé sous Node** — c'est la pièce maîtresse.
+
+## 📱 Installer sur mon téléphone + sonneries MÊME hors-ligne
+
+**Niveau 1 — PWA (5 minutes, déjà prêt) :**
+1. Ouvre l'URL de l'appli dans Chrome (Android) ou Safari (iPhone)
+2. Menu → **Installer l'application** / *Ajouter à l'écran d'accueil*
+3. Ouvre Kai une fois par jour (ou garde-la en tâche de fond)
+4. Android : paramètres batterie → Kai = **Sans restriction** ⚠️
+
+→ Notifications + sonneries **offline** ✔ (Web Audio + Notification API), tant que l'appli tourne en arrière-plan.
+
+**Niveau 2 — Vraie APK (sonneries même appli fermée) — Capacitor :**
+```bash
+npm run build            # copie l'app dans www/
+npm install @capacitor/core @capacitor/cli @capacitor/local-notifications
+npx cap add android      # crée le projet Android
+npx cap sync
+npx cap open android     # ouvre Android Studio → Run ▶
+```
+Les notifications natives sont programmées **à l'avance dans le téléphone** : elles sonnent **appli fermée, sans internet, sans serveur**. Même logique pour iOS (`npx cap add ios`, TestFlight).
+
+## 🎨 Design
+
+- **Glass & gradient** : cartes en verre dépoli, dégradé violet→rose pour l'action, hero coloré
+- **Mode sombre** complet (bouton 🌙 en haut, ou auto selon le téléphone)
+- **Couleurs = sens** : chaque domaine de vie a sa couleur (foi violet, kaydigi rose…), N1/N2/N3 visibles
+- Anneau de progression, nav pilule flottante, micro-animations (respecte `prefers-reduced-motion`)
 
 ## Limitations honnêtes
 

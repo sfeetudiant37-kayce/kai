@@ -1,0 +1,20 @@
+{
+  "appId": "com.kaydigi.kai",
+  "appName": "Kai",
+  "webDir": "www",
+  "backgroundColor": "#F4F3FB",
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon",
+      "iconColor": "#6D5AE6",
+      "sound": null
+    },
+    "SplashScreen": {
+      "backgroundColor": "#6D5AE6",
+      "showSpinner": false
+    }
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}

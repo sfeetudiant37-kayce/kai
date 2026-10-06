@@ -1,10 +1,15 @@
 /* ============ KAI — Design tokens (source de vérité) ============ */
 :root {
-  /* couleurs sémantiques */
+  /* identité */
   --accent: #6D5AE6;
-  --accent-soft: #EEEBFF;
+  --accent-2: #A855F7;
+  --accent-3: #EC4899;
+  --gradient: linear-gradient(135deg, #6D5AE6 0%, #A855F7 55%, #EC4899 130%);
+  --gradient-soft: linear-gradient(135deg, rgba(109,90,230,.12), rgba(236,72,153,.10));
+  --accent-soft: #EFECFF;
   --accent-ink: #4B3BC4;
 
+  /* domaines de vie (la couleur porte le sens) */
   --domain-foi: #8B5CF6;
   --domain-corps: #14B8A6;
   --domain-ecriture: #3B82F6;
@@ -14,25 +19,31 @@
   --domain-amis: #F97316;
   --domain-fixed: #94A3B8;
 
+  /* criticalité */
   --n1: #1F2937;
   --n2: #F59E0B;
   --n3: #94A3B8;
 
-  --bg: #F7F7FB;
+  /* surfaces */
+  --bg: #F4F3FB;
+  --bg-glow-1: rgba(109, 90, 230, .16);
+  --bg-glow-2: rgba(236, 72, 153, .10);
   --surface: #FFFFFF;
-  --surface-2: #F1F1F8;
-  --border: #E4E4F0;
-  --text: #17172A;
-  --text-2: #5B5B72;
+  --glass: rgba(255, 255, 255, .72);
+  --surface-2: #F1F0FA;
+  --border: rgba(23, 23, 42, .08);
+  --border-strong: rgba(23, 23, 42, .14);
+  --text: #16162B;
+  --text-2: #55556E;
   --text-3: #8E8EA6;
   --success: #16A34A;
   --warning: #D97706;
-  --danger: #DC2626;
+  --danger: #E11D48;
   --info: #2563EB;
 
   /* typographie */
-  --font: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font: "Plus Jakarta Sans", "Outfit", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
   --fs-11: 11px; --fs-12: 12px; --fs-14: 14px; --fs-16: 16px;
   --fs-20: 20px; --fs-24: 24px; --fs-30: 30px;
 
@@ -40,16 +51,77 @@
   --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px;
 
   /* rayons & élévation */
-  --r-chip: 10px; --r-card: 16px; --r-sheet: 24px;
-  --sh-1: 0 1px 2px rgba(23,23,42,.06), 0 1px 3px rgba(23,23,42,.04);
-  --sh-2: 0 4px 12px rgba(23,23,42,.08);
-  --sh-3: 0 12px 32px rgba(23,23,42,.16);
+  --r-chip: 12px; --r-card: 20px; --r-sheet: 28px; --r-pill: 999px;
+  --sh-1: 0 1px 2px rgba(22,22,43,.05), 0 6px 16px rgba(22,22,43,.05);
+  --sh-2: 0 8px 24px rgba(22,22,43,.10);
+  --sh-3: 0 16px 48px rgba(22,22,43,.20);
+  --sh-glow: 0 6px 24px rgba(109,90,230,.35);
 
   /* mouvement */
   --t-fast: 150ms; --t-med: 250ms; --t-slow: 400ms;
   --ease: cubic-bezier(.2,.8,.2,1);
 
-  --nav-h: 64px;
+  --nav-h: 68px;
+}
+
+/* ---------- Mode sombre (human-centric : lisible la nuit) ---------- */
+[data-theme="dark"] {
+  --accent: #8B7CFF;
+  --accent-2: #C084FC;
+  --accent-3: #F472B6;
+  --gradient: linear-gradient(135deg, #7C6AF0 0%, #A855F7 55%, #F472B6 130%);
+  --gradient-soft: linear-gradient(135deg, rgba(124,106,240,.18), rgba(244,114,182,.12));
+  --accent-soft: rgba(124, 106, 240, .18);
+  --accent-ink: #C7BDFF;
+
+  --n1: #E5E7EB;
+  --n3: #6B7280;
+
+  --bg: #0F0F1A;
+  --bg-glow-1: rgba(124, 106, 240, .22);
+  --bg-glow-2: rgba(244, 114, 182, .12);
+  --surface: #1A1A2E;
+  --glass: rgba(26, 26, 46, .72);
+  --surface-2: #24243C;
+  --border: rgba(255, 255, 255, .08);
+  --border-strong: rgba(255, 255, 255, .16);
+  --text: #F2F2FA;
+  --text-2: #B9B9CF;
+  --text-3: #7C7C99;
+
+  --sh-1: 0 1px 2px rgba(0,0,0,.3), 0 6px 16px rgba(0,0,0,.25);
+  --sh-2: 0 8px 24px rgba(0,0,0,.35);
+  --sh-3: 0 16px 48px rgba(0,0,0,.5);
+  --sh-glow: 0 6px 28px rgba(124,106,240,.45);
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-theme="auto"] {
+    --accent: #8B7CFF;
+    --accent-2: #C084FC;
+    --accent-3: #F472B6;
+    --gradient: linear-gradient(135deg, #7C6AF0 0%, #A855F7 55%, #F472B6 130%);
+    --gradient-soft: linear-gradient(135deg, rgba(124,106,240,.18), rgba(244,114,182,.12));
+    --accent-soft: rgba(124, 106, 240, .18);
+    --accent-ink: #C7BDFF;
+    --n1: #E5E7EB;
+    --n3: #6B7280;
+    --bg: #0F0F1A;
+    --bg-glow-1: rgba(124, 106, 240, .22);
+    --bg-glow-2: rgba(244, 114, 182, .12);
+    --surface: #1A1A2E;
+    --glass: rgba(26, 26, 46, .72);
+    --surface-2: #24243C;
+    --border: rgba(255, 255, 255, .08);
+    --border-strong: rgba(255, 255, 255, .16);
+    --text: #F2F2FA;
+    --text-2: #B9B9CF;
+    --text-3: #7C7C99;
+    --sh-1: 0 1px 2px rgba(0,0,0,.3), 0 6px 16px rgba(0,0,0,.25);
+    --sh-2: 0 8px 24px rgba(0,0,0,.35);
+    --sh-3: 0 16px 48px rgba(0,0,0,.5);
+    --sh-glow: 0 6px 28px rgba(124,106,240,.45);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

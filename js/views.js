@@ -10,7 +10,7 @@ import {
   zonesForDate, fixedBlocksForDate, capacityMinutes, requestedMinutes,
   placeWeek, findAlternatives, reroute, sleepDebt,
 } from './engine.js';
-import { $, toast, sheet, closeSheet, ringSVG, meter, ICON, critChip, escapeHtml } from './ui.js';
+import { $, toast, sheet, closeSheet, ringSVG, meter, ICON, critChip, escapeHtml, applyTheme } from './ui.js';
 import { playRing, ensureAudio, requestNotifications, notificationsPermission } from './alarms.js';
 
 /* ---------- helpers ---------- */
@@ -75,8 +75,10 @@ export function viewToday(state) {
   const logs = state.rerouteLog.slice(-4).reverse();
 
   return `
-    <h2>${greet}, ${escapeHtml(state.profile.name)} — il est ${toHM(n)}.</h2>
-    <p class="muted">${frDay(iso)} ${frShort(iso).split(' ').slice(1).join(' ')} · voici ta journée, avec ce qui compte.</p>
+    <div class="hero">
+      <h2>${greet}, ${escapeHtml(state.profile.name)} ✨</h2>
+      <div class="muted">${frDay(iso)} ${frShort(iso).split(' ').slice(1).join(' ')} · il est ${toHM(n)} — voici ta journée, avec ce qui compte.</div>
+    </div>
 
     ${debt.flag ? `<div class="driver-msg"><div class="avatar">K</div><div><strong>Le chauffeur veille sur toi.</strong><br>${escapeHtml(debt.note)}</div></div>` : ''}
 
@@ -363,6 +365,15 @@ export function viewSettings(state) {
       </form>
     </div>
 
+    <div class="section-title">Apparence</div>
+    <div class="card">
+      <div class="seg" id="s-theme">
+        <button type="button" data-val="auto" class="${(state.settings.theme || 'auto') === 'auto' ? 'on' : ''}">🌗 Auto</button>
+        <button type="button" data-val="light" class="${state.settings.theme === 'light' ? 'on' : ''}">☀️ Clair</button>
+        <button type="button" data-val="dark" class="${state.settings.theme === 'dark' ? 'on' : ''}">🌙 Sombre</button>
+      </div>
+    </div>
+
     <div class="section-title">Sonneries & notifications</div>
     <div class="card">
       <div class="btn-row">
@@ -380,7 +391,7 @@ export function viewSettings(state) {
         <label class="btn" style="display:inline-flex;align-items:center">Importer<input type="file" id="import-file" accept="application/json" hidden /></label>
         <button class="btn danger" data-action="reset">Tout réinitialiser</button>
       </div>
-      <div class="muted" style="margin-top:8px">Tes données ne quittent jamais ton appareil. Exporte régulièrement.</div>
+      <div class="muted" style="margin-top:8px">💾 Tes données vivent dans une vraie base de données locale (<b>IndexedDB</b>), hors-ligne, chiffrable. Exporte régulièrement.</div>
     </div>
 
     <div class="section-title">Le contrat (rappel)</div>
@@ -563,8 +574,20 @@ export const actions = {
     if (flex) ctx.state.profile.saturdayFlex = flex;
     const sun = document.querySelector('#s-sunday .on')?.dataset.val;
     if (sun !== undefined) ctx.state.profile.sundaySocial = sun === '1';
+    const theme = document.querySelector('#s-theme .on')?.dataset.val;
+    if (theme) { ctx.state.settings.theme = theme; applyTheme(theme); }
     ctx.save();
     toast('✅ Réglages enregistrés. La maison est calibrée.');
+  },
+
+  'theme-toggle': (ctx) => {
+    const order = ['auto', 'light', 'dark'];
+    const cur = ctx.state.settings.theme || 'auto';
+    const next = order[(order.indexOf(cur) + 1) % order.length];
+    ctx.state.settings.theme = next;
+    applyTheme(next);
+    ctx.save();
+    toast(next === 'dark' ? '🌙 Mode sombre.' : next === 'light' ? '☀️ Mode clair.' : '🌗 Thème auto (selon ton téléphone).');
   },
 
   'sleep-save': (ctx, form) => {

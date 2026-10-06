@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Kai — ton chauffeur personnel</title>
+  <meta name="description" content="Kai : le système de consistency de Kayliah — weekly achievements, sonneries, collisions gérées, comptes rendus." />
+  <meta name="theme-color" content="#6D5AE6" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+  <div id="shell">
+    <header id="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M8 6v12M8 12l7-6M8 12l7 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" fill="none"/><circle cx="17" cy="12" r="1.8" fill="#fff"/></svg>
+        </div>
+        <div>
+          <strong>Kai</strong>
+          <span id="driver-status" class="muted">le chauffeur est prêt</span>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="theme-ico" data-action="theme-toggle" title="Changer de thème" aria-label="Changer de thème">🌙</button>
+        <button class="icon-btn" data-action="ring-enable" title="Activer les sonneries" aria-label="Activer les sonneries">🔔</button>
+        <button class="icon-btn" data-action="go" data-view="settings" title="Réglages" aria-label="Réglages">⚙️</button>
+      </div>
+    </header>
+
+    <main id="app" aria-live="polite"><!-- vue active --></main>
+
+    <nav id="bottomnav" aria-label="Navigation principale">
+      <button data-action="go" data-view="today"><span class="nav-ico">◉</span><span>Aujourd'hui</span></button>
+      <button data-action="go" data-view="week"><span class="nav-ico">▦</span><span>Semaine</span></button>
+      <button class="fab" data-action="go" data-view="add" aria-label="Ajouter une tâche"><span>+</span></button>
+      <button data-action="go" data-view="checkins"><span class="nav-ico">☑</span><span>Comptes</span></button>
+      <button data-action="go" data-view="progress"><span class="nav-ico">↗</span><span>Progression</span></button>
+    </nav>
+  </div>
+
+  <!-- bannière de sonnerie (le chauffeur) -->
+  <div id="ring-banner" class="ring-banner hidden" role="alertdialog" aria-label="Sonnerie de tâche">
+    <div class="ring-line">
+      <span class="ring-emoji">⏰</span>
+      <div>
+        <strong id="ring-title">C'est l'heure !</strong>
+        <div id="ring-sub" class="muted"></div>
+      </div>
+    </div>
+    <div class="ring-actions">
+      <button class="btn primary" data-action="ring-start">Je commence</button>
+      <button class="btn ghost" data-action="ring-defer">Je décale</button>
+    </div>
+  </div>
+
+  <!-- toast / message du chauffeur -->
+  <div id="toast" class="toast hidden" role="status"></div>
+
+  <!-- feuille modale (bottom sheet) -->
+  <div id="sheet-backdrop" class="sheet-backdrop hidden" data-action="sheet-close"></div>
+  <div id="sheet" class="sheet hidden" role="dialog" aria-modal="true"></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

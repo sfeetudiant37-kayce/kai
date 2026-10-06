@@ -3,6 +3,14 @@
    ============================================================ */
 
 export function $(sel, root = document) { return root.querySelector(sel); }
+
+/** Thème : clair / sombre / auto. */
+export function applyTheme(theme) {
+  const t = theme || 'auto';
+  document.documentElement.dataset.theme = t;
+  const ico = document.querySelector('#theme-ico');
+  if (ico) ico.textContent = t === 'dark' ? '☀️' : t === 'light' ? '🌙' : '🌗';
+}
 export function $$(sel, root = document) { return [...root.querySelectorAll(sel)]; }
 
 export function toast(msg, ms = 3800) {

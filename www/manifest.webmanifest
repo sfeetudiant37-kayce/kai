@@ -1,0 +1,16 @@
+{
+  "name": "Kai — le chauffeur personnel de Kayliah",
+  "short_name": "Kai",
+  "description": "Système de consistency : weekly achievements, sonneries, collisions gérées, comptes rendus. 100% hors-ligne.",
+  "lang": "fr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#F7F7FB",
+  "theme_color": "#6D5AE6",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

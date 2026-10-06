@@ -144,6 +144,9 @@ const ls = globalThis.localStorage ?? {
   removeItem: k => { delete mem[k]; },
 };
 
+// la vraie base = IndexedDB (db.js) ; localStorage sert de miroir de démarrage instantané
+import { dbSet, dbGet, dbAppend, dbWipe } from './db.js';
+
 export function load() {
   try {
     const raw = ls.getItem(KEY);
@@ -154,9 +157,27 @@ export function load() {
     return { ...base, ...st, profile: { ...base.profile, ...st.profile }, settings: { ...base.settings, ...st.settings } };
   } catch { return defaultState(); }
 }
+
+/** Restaure depuis la vraie base (IndexedDB) si elle est plus fraîche que le miroir. */
+export async function restoreFromDB() {
+  try {
+    const saved = await dbGet('state');
+    if (!saved) return null;
+    const mirrored = ls.getItem(KEY);
+    const mirrorTime = mirrored ? (JSON.parse(mirrored).savedAt || '') : '';
+    if ((saved.savedAt || '') >= mirrorTime) return saved;
+    return null;
+  } catch { return null; }
+}
+
 export function save(st) {
   st.savedAt = new Date().toISOString();
-  ls.setItem(KEY, JSON.stringify(st));
+  ls.setItem(KEY, JSON.stringify(st));           // miroir instantané
+  try {
+    dbSet('state', st);                           // vraie base (IndexedDB)
+    for (const c of (st.checkins || [])) dbAppend('checkins', c);
+    for (const l of (st.rerouteLog || [])) dbAppend('log', l);
+  } catch { /* hors navigateur */ }
   return st;
 }
 export function exportBackup(st) {
@@ -170,6 +191,7 @@ export function importBackup(json) {
 }
 export function resetAll() {
   ls.removeItem(KEY);
+  try { dbWipe(); } catch { }
   return defaultState();
 }
 
